@@ -227,7 +227,7 @@ export default function ReservarTurnoPage() {
                             variant={"outline"}
                             className={cn(
                               "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
                             )}
                             disabled={!form.getValues("doctorId")}
                           >
@@ -254,8 +254,8 @@ export default function ReservarTurnoPage() {
                             today.setHours(0, 0, 0, 0);
                             const day = date.getDay();
                             return date < today || day === 0 || day === 6;
+                            // return date < today;
                           }}
-                          initialFocus
                         />
                       </PopoverContent>
                     </Popover>
