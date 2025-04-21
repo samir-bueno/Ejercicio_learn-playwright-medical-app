@@ -80,7 +80,7 @@ export default function ReservarTurnoPage() {
     };
 
     fetchSpecialties();
-  });
+  }, []);
 
   // Fetch doctors when specialty changes
   const onSpecialtyChange = async (value: string) => {
@@ -227,7 +227,7 @@ export default function ReservarTurnoPage() {
                             variant={"outline"}
                             className={cn(
                               "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
+                              !field.value && "text-muted-foreground"
                             )}
                             disabled={!form.getValues("doctorId")}
                           >
