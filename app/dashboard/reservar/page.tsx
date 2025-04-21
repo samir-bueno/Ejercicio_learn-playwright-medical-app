@@ -1,112 +1,142 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn, formatDate } from "@/lib/utils"
-import { CalendarIcon } from "lucide-react"
-import { createAppointment, getAvailableTimeSlots, getDoctorsBySpecialty, getSpecialties } from "@/lib/actions"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn, formatDate } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import {
+  createAppointment,
+  getAvailableTimeSlots,
+  getDoctorsBySpecialty,
+  getSpecialties,
+} from "@/lib/actions";
 
 const appointmentSchema = z.object({
   specialty: z.string({ required_error: "Seleccione una especialidad" }),
   doctorId: z.string({ required_error: "Seleccione un médico" }),
   date: z.date({ required_error: "Seleccione una fecha" }),
   timeSlot: z.string({ required_error: "Seleccione un horario" }),
-})
+});
 
 export default function ReservarTurnoPage() {
-  const [specialties, setSpecialties] = useState<{ id: string; name: string }[]>([])
-  const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([])
-  const [timeSlots, setTimeSlots] = useState<string[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [specialties, setSpecialties] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([]);
+  const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof appointmentSchema>>({
     resolver: zodResolver(appointmentSchema),
-  })
+  });
 
   // Fetch specialties on component mount
-  useState(() => {
+  useEffect(() => {
     const fetchSpecialties = async () => {
       try {
-        const data = await getSpecialties()
-        setSpecialties(data)
+        const data = await getSpecialties();
+        setSpecialties(data);
       } catch (error) {
         toast({
           title: "Error",
           description: "No se pudieron cargar las especialidades",
           variant: "destructive",
-        })
+        });
       }
-    }
+    };
 
-    fetchSpecialties()
-  })
+    fetchSpecialties();
+  });
 
   // Fetch doctors when specialty changes
   const onSpecialtyChange = async (value: string) => {
     try {
-      const data = await getDoctorsBySpecialty(value)
-      setDoctors(data)
-      form.setValue("doctorId", "")
-      form.setValue("date", undefined as any)
-      form.setValue("timeSlot", "")
-      setTimeSlots([])
+      const data = await getDoctorsBySpecialty(value);
+      setDoctors(data);
+      form.setValue("doctorId", "");
+      form.setValue("date", undefined as any);
+      form.setValue("timeSlot", "");
+      setTimeSlots([]);
     } catch (error) {
       toast({
         title: "Error",
         description: "No se pudieron cargar los médicos",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   // Fetch available time slots when date changes
   const onDateChange = async (date: Date) => {
-    const doctorId = form.getValues("doctorId")
-    if (!doctorId) return
+    const doctorId = form.getValues("doctorId");
+    if (!doctorId) return;
 
     try {
-      const data = await getAvailableTimeSlots(doctorId, date)
-      setTimeSlots(data)
-      form.setValue("timeSlot", "")
+      const data = await getAvailableTimeSlots(doctorId, date);
+      setTimeSlots(data);
+      form.setValue("timeSlot", "");
     } catch (error) {
       toast({
         title: "Error",
         description: "No se pudieron cargar los horarios disponibles",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   async function onSubmit(values: z.infer<typeof appointmentSchema>) {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await createAppointment(values)
+      await createAppointment(values);
 
       toast({
         title: "Turno reservado",
         description: "Tu turno ha sido reservado exitosamente",
-      })
+      });
 
-      router.push("/dashboard")
+      router.push("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error al reservar turno",
         description: error.message || "Ocurrió un error al reservar el turno",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -117,7 +147,9 @@ export default function ReservarTurnoPage() {
       <Card>
         <CardHeader>
           <CardTitle>Datos del turno</CardTitle>
-          <CardDescription>Selecciona la especialidad, médico, fecha y horario para tu consulta</CardDescription>
+          <CardDescription>
+            Selecciona la especialidad, médico, fecha y horario para tu consulta
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -130,8 +162,8 @@ export default function ReservarTurnoPage() {
                     <FormLabel>Especialidad</FormLabel>
                     <Select
                       onValueChange={(value) => {
-                        field.onChange(value)
-                        onSpecialtyChange(value)
+                        field.onChange(value);
+                        onSpecialtyChange(value);
                       }}
                       value={field.value}
                     >
@@ -159,7 +191,11 @@ export default function ReservarTurnoPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Médico</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={!form.getValues("specialty")}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!form.getValues("specialty")}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecciona un médico" />
@@ -189,10 +225,17 @@ export default function ReservarTurnoPage() {
                         <FormControl>
                           <Button
                             variant={"outline"}
-                            className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
                             disabled={!form.getValues("doctorId")}
                           >
-                            {field.value ? formatDate(field.value) : <span>Selecciona una fecha</span>}
+                            {field.value ? (
+                              formatDate(field.value)
+                            ) : (
+                              <span>Selecciona una fecha</span>
+                            )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -202,15 +245,15 @@ export default function ReservarTurnoPage() {
                           mode="single"
                           selected={field.value}
                           onSelect={(date) => {
-                            field.onChange(date)
-                            if (date) onDateChange(date)
+                            field.onChange(date);
+                            if (date) onDateChange(date);
                           }}
                           disabled={(date) => {
                             // Disable past dates and weekends
-                            const today = new Date()
-                            today.setHours(0, 0, 0, 0)
-                            const day = date.getDay()
-                            return date < today || day === 0 || day === 6
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const day = date.getDay();
+                            return date < today || day === 0 || day === 6;
                           }}
                           initialFocus
                         />
@@ -227,7 +270,11 @@ export default function ReservarTurnoPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Horario</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={!form.getValues("date")}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!form.getValues("date")}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecciona un horario" />
@@ -260,6 +307,5 @@ export default function ReservarTurnoPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

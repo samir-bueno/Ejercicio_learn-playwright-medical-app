@@ -1,19 +1,18 @@
-"use server"
+"use server";
 
-import { cookies } from "next/headers"
+import { cookies } from "next/headers";
 
 export async function checkAuth() {
-  const sessionCookie = cookies().get("session")
+  const sessionCookie = (await cookies()).get("session");
 
   if (!sessionCookie) {
-    return null
+    return null;
   }
 
   try {
-    const session = JSON.parse(sessionCookie.value)
-    return session
+    const session = JSON.parse(sessionCookie.value);
+    return session;
   } catch (error) {
-    return null
+    return null;
   }
 }
-
