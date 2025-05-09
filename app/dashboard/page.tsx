@@ -34,8 +34,8 @@ export default async function DashboardPage() {
           {appointments.map((appointment) => (
             <Card key={appointment.id}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">{appointment.specialty}</CardTitle>
-                <CardDescription>Dr. {appointment.doctorName}</CardDescription>
+                <CardTitle className="text-lg">{appointment.specialty?.name}</CardTitle>
+                <CardDescription>{appointment.doctor?.name}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">

@@ -1,10 +1,9 @@
-// tests/utils/global-setup.ts
 import { prisma } from "../../lib/prisma";
 
 async function globalSetup() {
   console.log("🚀 Ejecutando globalSetup: Inicializando entorno de pruebas...");
 
-  // Limpieza: borra primero las citas, luego doctores, usuarios y especialidades
+  // Limpieza: comentamos las líneas para evitar que borre los datos
   await prisma.appointment.deleteMany();
   await prisma.doctor.deleteMany();
   await prisma.user.deleteMany();
@@ -41,7 +40,7 @@ async function globalSetup() {
       name: "Test User",
       email: "testuser@example.com",
       phone: "123456789",
-      password: "hashedpassword123", // Asegúrate de usar hash real si tu app lo necesita
+      password: "hashedpassword123",
     },
   });
 

@@ -8,7 +8,6 @@ async function globalTeardown() {
   await prisma.doctor.deleteMany(); // Elimina todos los doctores
   await prisma.specialty.deleteMany(); // Elimina todas las especialidades
   await prisma.user.deleteMany(); // Elimina todos los usuarios
-  await prisma.post.deleteMany(); // Elimina los posts (si los tienes)
 
   console.log("Datos de prueba eliminados correctamente.");
 }
