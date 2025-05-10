@@ -56,7 +56,11 @@ export default function RegisterPage() {
         description: "Tu cuenta ha sido creada correctamente",
       })
 
-      router.push("/login")
+      // Redirigir después de un pequeño retraso
+      setTimeout(() => {
+        router.push("/login")
+      }, 300) // Asegúrate de que hay suficiente tiempo para la transición
+
     } catch (error) {
       toast({
         title: "Error al registrarse",
@@ -177,4 +181,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-

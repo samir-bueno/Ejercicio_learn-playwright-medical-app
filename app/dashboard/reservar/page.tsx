@@ -64,7 +64,6 @@ export default function ReservarTurnoPage() {
     resolver: zodResolver(appointmentSchema),
   });
 
-  // Fetch specialties on component mount
   useEffect(() => {
     const fetchSpecialties = async () => {
       try {
@@ -82,7 +81,6 @@ export default function ReservarTurnoPage() {
     fetchSpecialties();
   }, []);
 
-  // Fetch doctors when specialty changes
   const onSpecialtyChange = async (value: string) => {
     try {
       const data = await getDoctorsBySpecialty(value);
@@ -100,7 +98,6 @@ export default function ReservarTurnoPage() {
     }
   };
 
-  // Fetch available time slots when date changes
   const onDateChange = async (date: Date) => {
     const doctorId = form.getValues("doctorId");
     if (!doctorId) return;
@@ -128,11 +125,21 @@ export default function ReservarTurnoPage() {
         description: "Tu turno ha sido reservado exitosamente",
       });
 
-      router.push("/dashboard");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 300);
     } catch (error: any) {
+      let message = "Ocurrió un error al reservar el turno";
+      if (
+        error.message &&
+        error.message.includes("UNIQUE constraint failed: Appointment")
+      ) {
+        message = "Ya tienes un turno reservado en ese horario";
+      }
+
       toast({
         title: "Error al reservar turno",
-        description: error.message || "Ocurrió un error al reservar el turno",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -204,7 +211,7 @@ export default function ReservarTurnoPage() {
                       <SelectContent>
                         {doctors.map((doctor) => (
                           <SelectItem key={doctor.id} value={doctor.id}>
-                            Dr. {doctor.name}
+                            {doctor.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -227,7 +234,7 @@ export default function ReservarTurnoPage() {
                             variant={"outline"}
                             className={cn(
                               "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
+                              !field.value && "text-muted-foreground"
                             )}
                             disabled={!form.getValues("doctorId")}
                           >
@@ -249,12 +256,10 @@ export default function ReservarTurnoPage() {
                             if (date) onDateChange(date);
                           }}
                           disabled={(date) => {
-                            // Disable past dates and weekends
                             const today = new Date();
                             today.setHours(0, 0, 0, 0);
                             const day = date.getDay();
                             return date < today || day === 0 || day === 6;
-                            // return date < today;
                           }}
                         />
                       </PopoverContent>

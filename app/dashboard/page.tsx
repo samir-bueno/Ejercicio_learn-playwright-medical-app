@@ -1,13 +1,39 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { getUserAppointments } from "@/lib/actions"
 import { formatDate } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Calendar, Clock } from "lucide-react"
 import Link from "next/link"
 import { CancelAppointmentButton } from "@/components/cancel-appointment-button"
 
-export default async function DashboardPage() {
-  const appointments = await getUserAppointments()
+export default function DashboardPage() {
+  const [appointments, setAppointments] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const data = await getUserAppointments()
+      setAppointments(data)
+      setLoading(false)
+    }
+
+    fetchAppointments()
+  }, [])
+
+  const handleCancel = (id: string) => {
+    setAppointments((prev) => prev.filter((a) => a.id !== id))
+  }
+
+  if (loading) return <p>Cargando...</p>
 
   return (
     <div className="space-y-6">
@@ -48,7 +74,11 @@ export default async function DashboardPage() {
                     <span>{appointment.time}</span>
                   </div>
 
-                  <CancelAppointmentButton appointmentId={appointment.id} appointmentDate={appointment.date} />
+                  <CancelAppointmentButton
+                    appointmentId={appointment.id}
+                    appointmentDate={appointment.date}
+                    onCancel={() => handleCancel(appointment.id)}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -58,4 +88,3 @@ export default async function DashboardPage() {
     </div>
   )
 }
-

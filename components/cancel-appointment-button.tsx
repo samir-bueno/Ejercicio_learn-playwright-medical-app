@@ -16,16 +16,19 @@ import {
 import { X } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { cancelAppointment } from "@/lib/actions"
-import { useRouter } from "next/navigation"
 
 interface CancelAppointmentButtonProps {
   appointmentId: string
   appointmentDate: Date
+  onCancel?: () => void
 }
 
-export function CancelAppointmentButton({ appointmentId, appointmentDate }: CancelAppointmentButtonProps) {
+export function CancelAppointmentButton({
+  appointmentId,
+  appointmentDate,
+  onCancel,
+}: CancelAppointmentButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   // Check if appointment is within 24 hours
   const isWithin24Hours = () => {
@@ -45,7 +48,9 @@ export function CancelAppointmentButton({ appointmentId, appointmentDate }: Canc
         title: "Turno cancelado",
         description: "Tu turno ha sido cancelado exitosamente",
       })
-      router.refresh()
+      setTimeout(() => {
+        onCancel?.()
+      }, 300)
     } catch (error) {
       toast({
         title: "Error al cancelar",
@@ -91,4 +96,3 @@ export function CancelAppointmentButton({ appointmentId, appointmentDate }: Canc
     </AlertDialog>
   )
 }
-
