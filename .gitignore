@@ -32,3 +32,11 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# db
+
+prisma/dev.db
+prisma/db/
+prisma/migrations
+lib/generated/
+prisma/dev.db-journal
