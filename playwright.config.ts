@@ -44,8 +44,8 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    { name: "chromium", use: { headless: false } },
-    //{ name: "firefox", use: { headless: true } },
+    // { name: "chromium", use: { headless: false } },
+    { name: "firefox", use: { headless: true } },
     //{ name: "webkit", use: { headless: true } }, // Deshabilitar si no es necesario
 
     /* Test against mobile viewports. */
